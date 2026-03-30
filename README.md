@@ -24,3 +24,7 @@ Proyecto de **Ingeniería de Software** enfocado en el procesamiento de datos es
 ## 👤 Autor
 * **Randhal Arias** - Estudiante de Ingeniería de Software con IA.
 * **GitHub:** [ViCaptum](https://github.com/ViCaptum)
+
+## 📥 Descarga y Versiones
+* [**Descargar última versión (APK)**](https://github.com/ViCaptum/Tablas_frecuencia/releases/tag/v1.0)
+* [**Ver historial de lanzamientos (Releases)**](https://github.com/ViCaptum/Tablas_frecuencia/releases)
