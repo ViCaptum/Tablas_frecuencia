@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:weightSum="2">
+
+    <TextView
+        android:id="@+id/tvDato"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:padding="6dp"
+        android:text="1"
+        android:textSize="12sp"
+        android:gravity="center"
+        android:textColor="@color/textPrimary"
+        android:background="@drawable/cell_border"/>
+
+    <TextView
+        android:id="@+id/tvRepeticiones"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:padding="6dp"
+        android:text="2"
+        android:textSize="12sp"
+        android:gravity="center"
+        android:textColor="@color/textPrimary"
+        android:background="@drawable/cell_border"/>
+
+</LinearLayout>
