@@ -1,4 +1,4 @@
-package com.curso.tablas_frecuencia;
+package com.curso.tablas_frecuencia.controller;
 
 import android.os.Bundle;
 import android.widget.EditText;
@@ -8,6 +8,13 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.curso.tablas_frecuencia.R;
+import com.curso.tablas_frecuencia.adapter.FrecuenciaSimpleAdapter;
+import com.curso.tablas_frecuencia.adapter.FrequencyAdapter;
+import com.curso.tablas_frecuencia.model.EstadisticaUtils;
+import com.curso.tablas_frecuencia.model.FrecuenciaItem;
+import com.curso.tablas_frecuencia.model.FrecuenciaSimpleItem;
 
 import java.util.*;
 

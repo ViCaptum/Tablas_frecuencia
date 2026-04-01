@@ -1,4 +1,4 @@
-package com.curso.tablas_frecuencia;
+package com.curso.tablas_frecuencia.adapter;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -7,6 +7,9 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.curso.tablas_frecuencia.R;
+import com.curso.tablas_frecuencia.model.FrecuenciaItem;
 
 import java.util.List;
 import java.util.Locale;

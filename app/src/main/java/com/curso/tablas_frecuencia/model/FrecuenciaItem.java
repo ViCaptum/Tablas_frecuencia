@@ -1,4 +1,4 @@
-package com.curso.tablas_frecuencia;
+package com.curso.tablas_frecuencia.model;
 
 public class FrecuenciaItem {
 

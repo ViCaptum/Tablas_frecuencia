@@ -47,6 +47,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Ej: 1 2 3 4 5"
+                    android:inputType="numberDecimal"
+                    android:digits="0123456789. "
                     android:textColor="@color/textPrimary"
                     android:textColorHint="@color/textSecondary"
                     android:background="@android:color/transparent"
