@@ -1,10 +1,16 @@
 package com.curso.tablas_frecuencia.controller;
 
+import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -15,6 +21,11 @@ import com.curso.tablas_frecuencia.adapter.FrequencyAdapter;
 import com.curso.tablas_frecuencia.model.EstadisticaUtils;
 import com.curso.tablas_frecuencia.model.FrecuenciaItem;
 import com.curso.tablas_frecuencia.model.FrecuenciaSimpleItem;
+import com.curso.tablas_frecuencia.model.ScannerUtils;
+import com.google.mlkit.vision.common.InputImage;
+import com.google.mlkit.vision.text.TextRecognition;
+import com.google.mlkit.vision.text.TextRecognizer;
+import com.google.mlkit.vision.text.latin.TextRecognizerOptions;
 
 import java.util.*;
 
@@ -28,6 +39,9 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView rvFrecuenciaSimple;
     private FrequencyAdapter adapter;
     private FrecuenciaSimpleAdapter simpleAdapter;
+    private ImageButton btnScanCamera;
+    private ActivityResultLauncher<Intent> cameraLauncher;
+    private ActivityResultLauncher<String> requestPermissionLauncher;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +51,34 @@ public class MainActivity extends AppCompatActivity {
         initViews();
 
         findViewById(R.id.btnCalculate).setOnClickListener(v -> procesarInformacion());
+
+        btnScanCamera = findViewById(R.id.btnScanCamera);
+
+        requestPermissionLauncher = registerForActivityResult(
+                new ActivityResultContracts.RequestPermission(),
+                isGranted -> {
+                    if (isGranted) {
+                        ejecutarIntentCamara();
+                    } else {
+                        Toast.makeText(this, "Permiso de cámara denegado", Toast.LENGTH_SHORT).show();
+                    }
+                }
+        );
+
+        cameraLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                        Bundle extras = result.getData().getExtras();
+                        Bitmap imageBitmap = (Bitmap) extras.get("data");
+                        if (imageBitmap != null) {
+                            procesarImagenConIA(imageBitmap);
+                        }
+                    }
+                }
+        );
+
+        btnScanCamera.setOnClickListener(v -> abrirCamara());
     }
 
     private void initViews() {
@@ -212,4 +254,43 @@ public class MainActivity extends AppCompatActivity {
         }
         return lista;
     }
+
+    private void abrirCamara() {
+        if (androidx.core.content.ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA)
+                == android.content.pm.PackageManager.PERMISSION_GRANTED) {
+            ejecutarIntentCamara();
+        } else {
+            requestPermissionLauncher.launch(android.Manifest.permission.CAMERA);
+        }
+    }
+
+    private void ejecutarIntentCamara() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        try {
+            cameraLauncher.launch(takePictureIntent);
+        } catch (Exception e) {
+            Toast.makeText(this, "No se encontró una aplicación de cámara", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void procesarImagenConIA(Bitmap bitmap) {
+        InputImage image = InputImage.fromBitmap(bitmap, 0);
+        TextRecognizer recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS);
+
+        recognizer.process(image)
+                .addOnSuccessListener(visionText -> {
+                    String numerosDetectados = ScannerUtils.extraerNumeros(visionText);
+                    if (!numerosDetectados.isEmpty()) {
+                        String actual = etNumbersInput.getText().toString();
+                        etNumbersInput.setText(actual.isEmpty() ? numerosDetectados : actual + " " + numerosDetectados);
+                        Toast.makeText(this, "Números detectados con éxito", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(this, "No se encontraron números", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Error al procesar imagen", Toast.LENGTH_SHORT).show();
+                });
+    }
+
 }
