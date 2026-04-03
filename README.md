@@ -26,5 +26,5 @@ Proyecto de **Ingeniería de Software** enfocado en el procesamiento de datos es
 * **GitHub:** [ViCaptum](https://github.com/ViCaptum)
 
 ## 📥 Descarga y Versiones
-* [**Descargar última versión (APK)**](https://github.com/ViCaptum/Tablas_frecuencia/releases/tag/v1.0)
+* [**Descargar última versión (APK)**](https://github.com/ViCaptum/Tablas_frecuencia/releases/tag/v1.3.0)
 * [**Ver historial de lanzamientos (Releases)**](https://github.com/ViCaptum/Tablas_frecuencia/releases)
