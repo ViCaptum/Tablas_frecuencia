@@ -5,17 +5,16 @@ import com.google.mlkit.vision.text.Text;
 public class ScannerUtils {
 
     public static String extraerNumeros(Text visionText) {
+        
         StringBuilder resultado = new StringBuilder();
-
         for (Text.TextBlock block : visionText.getTextBlocks()) {
             for (Text.Line line : block.getLines()) {
-                for (Text.Element element : line.getElements()) {
-                    String elementText = element.getText();
-                    String limpio = elementText.replaceAll("[^0-9.]", "");
 
-                    if (!limpio.isEmpty()) {
-                        resultado.append(limpio).append(" ");
-                    }
+                String lineText = line.getText();
+                String limpio = lineText.replaceAll("[^0-9.\\s]", " ");
+
+                if (!limpio.trim().isEmpty()) {
+                    resultado.append(limpio).append(" ");
                 }
             }
         }
