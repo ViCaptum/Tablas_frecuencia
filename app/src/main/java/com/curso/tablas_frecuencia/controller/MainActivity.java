@@ -32,9 +32,8 @@ import java.util.*;
 public class MainActivity extends AppCompatActivity {
 
     private EditText etNumbersInput;
-    private TextView tvN, tvMin, tvMax, tvRange, tvClasses, tvWidth;
-    private TextView tvMedia, tvMediana, tvModa;
-    private TextView tvSortedNumbers;
+    private TextView tvN, tvMin, tvMax, tvRange, tvClasses, tvWidth, tvMedia, tvMediana, tvModa, tvSortedNumbers, tvVarianza, tvUSTD, tvCoefVar, tvAsimetria;
+    private TextView tvCurtosis;
     private RecyclerView rvFrequencyTable;
     private RecyclerView rvFrecuenciaSimple;
     private FrequencyAdapter adapter;
@@ -84,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
     private void initViews() {
         etNumbersInput = findViewById(R.id.etNumbersInput);
 
-        // NUEVOS IDs (IMPORTANTE)
+        // Bloque Izquierdo
         tvN = findViewById(R.id.tvN);
         tvMin = findViewById(R.id.tvMin);
         tvMax = findViewById(R.id.tvMax);
@@ -92,12 +91,17 @@ public class MainActivity extends AppCompatActivity {
         tvClasses = findViewById(R.id.tvClasses);
         tvWidth = findViewById(R.id.tvWidth);
 
+        // Bloque Derecho
         tvMedia = findViewById(R.id.tvMedia);
         tvMediana = findViewById(R.id.tvMediana);
         tvModa = findViewById(R.id.tvModa);
+        tvVarianza = findViewById(R.id.tvVarianza);
+        tvUSTD = findViewById(R.id.tvUSTD);
+        tvCoefVar = findViewById(R.id.tvCoefVar);
+        tvAsimetria = findViewById(R.id.tvAsimetria);
+        tvCurtosis = findViewById(R.id.tvCurtosis);
 
         tvSortedNumbers = findViewById(R.id.tvSortedNumbers);
-
         rvFrequencyTable = findViewById(R.id.rvFrequencyTable);
         rvFrecuenciaSimple = findViewById(R.id.rvFrecuenciaSimple);
 
@@ -119,7 +123,6 @@ public class MainActivity extends AppCompatActivity {
             Collections.sort(datos);
 
             int n = datos.size();
-
             double min = EstadisticaUtils.getMin(datos);
             double max = EstadisticaUtils.getMax(datos);
             double rango = EstadisticaUtils.getRango(max, min);
@@ -137,27 +140,40 @@ public class MainActivity extends AppCompatActivity {
             tvMediana.setText("Mediana: " + formatDecimal(mediana));
             tvModa.setText("Moda: " + formatearModa(modaList));
 
-            List<FrecuenciaItem> tabla = generarListaTabla(datos, min, k, amplitud);
-            adapter = new FrequencyAdapter(tabla);
-            rvFrequencyTable.setAdapter(adapter);
+            double varianza = EstadisticaUtils.calcularVarianza(datos, media);
+            double ustd = EstadisticaUtils.calcularDesviacionEstandar(varianza);
+            double cv = EstadisticaUtils.calcularCoeficienteVariacion(ustd, media);
+            double asimetria = EstadisticaUtils.calcularAsimetria(datos, media, ustd);
+            double curtosis = EstadisticaUtils.calcularCurtosis(datos, media, ustd);
 
-            Map<Double, Integer> frecuencia = EstadisticaUtils.calcularFrecuenciaSimple(datos);
-
-            List<FrecuenciaSimpleItem> listaSimple = new ArrayList<>();
-            for (Map.Entry<Double, Integer> entry : frecuencia.entrySet()) {
-                listaSimple.add(new FrecuenciaSimpleItem(entry.getKey(), entry.getValue()));
-            }
-
-            simpleAdapter = new FrecuenciaSimpleAdapter(listaSimple);
-            rvFrecuenciaSimple.setAdapter(simpleAdapter);
+            tvVarianza.setText("Varianza: " + formatDecimal(varianza));
+            tvUSTD.setText("USTD: " + formatDecimal(ustd));
+            tvCoefVar.setText("CV: " + formatDecimal(cv) + "%");
+            tvAsimetria.setText("Asimetría: " + formatDecimal(asimetria));
+            tvCurtosis.setText("Curtosis: " + formatDecimal(curtosis));
 
             etNumbersInput.setText("");
-
+            etNumbersInput.clearFocus();
+            actualizarTablas(datos, min, k, amplitud);
+            ocultarTeclado();
         } catch (Exception e) {
             Toast.makeText(this, "Error en los datos", Toast.LENGTH_SHORT).show();
         }
     }
 
+    private void actualizarTablas(List<Double> datos, double min, int k, double a) {
+        List<FrecuenciaItem> tabla = generarListaTabla(datos, min, k, a);
+        adapter = new FrequencyAdapter(tabla);
+        rvFrequencyTable.setAdapter(adapter);
+
+        Map<Double, Integer> frecuencia = EstadisticaUtils.calcularFrecuenciaSimple(datos);
+        List<FrecuenciaSimpleItem> listaSimple = new ArrayList<>();
+        for (Map.Entry<Double, Integer> entry : frecuencia.entrySet()) {
+            listaSimple.add(new FrecuenciaSimpleItem(entry.getKey(), entry.getValue()));
+        }
+        simpleAdapter = new FrecuenciaSimpleAdapter(listaSimple);
+        rvFrecuenciaSimple.setAdapter(simpleAdapter);
+    }
     private List<Double> obtenerListaDesdeString(String input) {
         List<Double> lista = new ArrayList<>();
         String[] partes = input.split("\\s+");
@@ -293,4 +309,11 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
+    private void ocultarTeclado() {
+        android.view.View view = this.getCurrentFocus();
+        if (view != null) {
+            android.view.inputmethod.InputMethodManager imm = (android.view.inputmethod.InputMethodManager) getSystemService(android.content.Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
+    }
 }

@@ -32,22 +32,56 @@ public class EstadisticaUtils {
     public static double calcularMedia(List<Double> datos) {
         validarLista(datos);
         double suma = 0;
-
-        for (double d : datos) {
-            suma += d;
-        }
-
+        for (double d : datos) suma += d;
         return suma / datos.size();
+    }
+
+    public static double calcularVarianza(List<Double> datos, double media) {
+        validarLista(datos);
+        double sumaCuadrados = 0;
+        for (double d : datos) {
+            sumaCuadrados += Math.pow(d - media, 2);
+        }
+        return sumaCuadrados / datos.size();
+    }
+
+    public static double calcularDesviacionEstandar(double varianza) {
+        return Math.sqrt(varianza);
+    }
+
+    public static double calcularCoeficienteVariacion(double ustd, double media) {
+        if (media == 0) return 0;
+        return (ustd / media) * 100; // Retorna porcentaje
+    }
+
+    public static double calcularAsimetria(List<Double> datos, double media, double ustd) {
+        if (ustd == 0) return 0;
+        double n = datos.size();
+        double sumaCubos = 0;
+        for (double d : datos) {
+            sumaCubos += Math.pow((d - media) / ustd, 3);
+        }
+        return (n / ((n - 1) * (n - 2))) * sumaCubos;
+    }
+
+    public static double calcularCurtosis(List<Double> datos, double media, double ustd) {
+        if (ustd == 0) return 0;
+        double n = datos.size();
+        double sumaCuarta = 0;
+        for (double d : datos) {
+            sumaCuarta += Math.pow((d - media) / ustd, 4);
+        }
+        // Curtosis excedente (para que 0 sea la normal)
+        double parte1 = (n * (n + 1)) / ((n - 1) * (n - 2) * (n - 3));
+        double parte2 = (3 * Math.pow(n - 1, 2)) / ((n - 2) * (n - 3));
+        return (parte1 * sumaCuarta) - parte2;
     }
 
     public static double calcularMediana(List<Double> datos) {
         validarLista(datos);
-
         List<Double> copia = new ArrayList<>(datos);
         Collections.sort(copia);
-
         int n = copia.size();
-
         if (n % 2 == 0) {
             return (copia.get(n / 2 - 1) + copia.get(n / 2)) / 2.0;
         } else {
@@ -57,35 +91,27 @@ public class EstadisticaUtils {
 
     public static List<Double> calcularModa(List<Double> datos) {
         validarLista(datos);
-
         Map<Double, Integer> frecuencia = new HashMap<>();
-
         for (double d : datos) {
             frecuencia.put(d, frecuencia.getOrDefault(d, 0) + 1);
         }
-
         int maxFrecuencia = Collections.max(frecuencia.values());
         List<Double> modas = new ArrayList<>();
-
         for (Map.Entry<Double, Integer> entry : frecuencia.entrySet()) {
             if (entry.getValue() == maxFrecuencia && maxFrecuencia > 1) {
                 modas.add(entry.getKey());
             }
         }
-
         Collections.sort(modas);
         return modas;
     }
 
     public static Map<Double, Integer> calcularFrecuenciaSimple(List<Double> datos) {
         validarLista(datos);
-
-        Map<Double, Integer> frecuencia = new TreeMap<>(); // ordenado
-
+        Map<Double, Integer> frecuencia = new TreeMap<>();
         for (double d : datos) {
             frecuencia.put(d, frecuencia.getOrDefault(d, 0) + 1);
         }
-
         return frecuencia;
     }
 

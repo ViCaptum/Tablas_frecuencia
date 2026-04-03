@@ -6,7 +6,7 @@ public class ScannerUtils {
 
     public static String extraerNumeros(Text visionText) {
         StringBuilder resultado = new StringBuilder();
-        
+
         for (Text.TextBlock block : visionText.getTextBlocks()) {
             for (Text.Line line : block.getLines()) {
                 for (Text.Element element : line.getElements()) {
